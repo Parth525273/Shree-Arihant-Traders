@@ -13,7 +13,7 @@ import {
   LineChart,
   Line
 } from 'recharts';
-import { ShoppingBag, Users, Building2, IndianRupee, TrendingUp } from 'lucide-react';
+import { ShoppingBag, Users, Building2, IndianRupee, TrendingUp, Box } from 'lucide-react';
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState(null);

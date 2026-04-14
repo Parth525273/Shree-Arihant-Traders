@@ -29,6 +29,12 @@ export default function Navbar() {
             <Link href="/" className="text-foreground hover:text-primary px-3 py-2 text-sm font-medium transition-colors">
               Browse
             </Link>
+
+            {user && (
+              <Link href="/orders" className="text-foreground hover:text-primary px-3 py-2 text-sm font-medium transition-colors">
+                My Orders
+              </Link>
+            )}
             
             <Link href="/cart" className="relative p-2 text-foreground hover:text-primary transition-colors">
               <ShoppingCart className="w-6 h-6" />
@@ -84,6 +90,11 @@ export default function Navbar() {
           <Link href="/" className="block px-3 py-2 text-base font-medium text-foreground hover:bg-muted rounded-md">
             Browse Companies
           </Link>
+          {user && (
+            <Link href="/orders" className="block px-3 py-2 text-base font-medium text-foreground hover:bg-muted rounded-md">
+              My Orders
+            </Link>
+          )}
           {user ? (
             <>
               {user.role === 'admin' && (

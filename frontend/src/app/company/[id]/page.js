@@ -3,7 +3,7 @@
 import { useState, useEffect, use } from 'react';
 import api from '@/lib/api';
 import Link from 'next/link';
-import { ShoppingCart, ArrowLeft, Tag } from 'lucide-react';
+import { ShoppingCart, ArrowLeft, Tag, Building2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function CompanyProducts({ params }) {
@@ -66,9 +66,18 @@ export default function CompanyProducts({ params }) {
       </Link>
 
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
-        <div>
-          <h1 className="text-4xl font-bold tracking-tight text-foreground">{company?.name}</h1>
-          <p className="mt-2 text-lg text-muted-foreground">{company?.description || "Browse available wholesale products."}</p>
+        <div className="flex items-center gap-6">
+          <div className="w-20 h-20 bg-card border border-border rounded-2xl flex items-center justify-center p-2 overflow-hidden flex-shrink-0">
+            {company?.logo && company.logo !== 'no-photo.jpg' ? (
+              <img src={company.logo} alt={company.name} className="w-full h-full object-contain" />
+            ) : (
+              <Building2 className="w-10 h-10 text-primary" />
+            )}
+          </div>
+          <div>
+            <h1 className="text-4xl font-bold tracking-tight text-foreground">{company?.name}</h1>
+            <p className="mt-2 text-lg text-muted-foreground">{company?.description || "Browse available wholesale products."}</p>
+          </div>
         </div>
       </div>
 
@@ -115,6 +124,25 @@ export default function CompanyProducts({ params }) {
                 className="group bg-card border border-border rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300"
               >
                 <div className="p-6">
+                  <div className="aspect-square bg-muted rounded-lg mb-4 flex items-center justify-center overflow-hidden relative">
+                    {product.images?.[0] && product.images[0] !== 'no-photo.jpg' ? (
+                      <img 
+                        src={product.images[0]} 
+                        alt={product.name} 
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                          e.target.nextSibling.style.display = 'flex';
+                        }}
+                      />
+                    ) : null}
+                    <div className={cn(
+                      "flex items-center justify-center w-full h-full",
+                      product.images?.[0] && product.images[0] !== 'no-photo.jpg' ? "hidden" : "flex"
+                    )}>
+                      <ShoppingCart className="w-8 h-8 text-muted-foreground" />
+                    </div>
+                  </div>
                   <div className="flex justify-between items-start mb-4">
                     <span className="bg-primary/10 text-primary text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-tighter">
                       {product.categoryId?.name}

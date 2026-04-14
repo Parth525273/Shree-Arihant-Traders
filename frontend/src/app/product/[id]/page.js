@@ -73,9 +73,25 @@ export default function ProductDetail({ params }) {
       </Link>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-        {/* Placeholder for Product Image */}
-        <div className="bg-card rounded-3xl border border-border aspect-square flex items-center justify-center overflow-hidden">
-          <Package className="w-40 h-40 text-muted" />
+        {/* Product Image */}
+        <div className="bg-card rounded-3xl border border-border aspect-square flex items-center justify-center overflow-hidden relative">
+          {product.images?.[0] && product.images[0] !== 'no-photo.jpg' ? (
+            <img 
+              src={product.images[0]} 
+              alt={product.name} 
+              className="w-full h-full object-cover" 
+              onError={(e) => {
+                e.target.style.display = 'none';
+                e.target.nextSibling.style.display = 'flex';
+              }}
+            />
+          ) : null}
+          <div className={cn(
+            "flex items-center justify-center w-full h-full",
+            product.images?.[0] && product.images[0] !== 'no-photo.jpg' ? "hidden" : "flex"
+          )}>
+            <Package className="w-40 h-40 text-muted" />
+          </div>
         </div>
 
         <div className="space-y-8">

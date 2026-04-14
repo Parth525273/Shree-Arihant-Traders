@@ -45,7 +45,38 @@ export default function MyOrdersPage() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-12">
-      <h1 className="text-4xl font-black mb-12">My Order History</h1>
+      <div className="mb-12">
+        <h1 className="text-4xl font-black mb-4">My Dashboard</h1>
+        
+        {/* Retailer Info Card */}
+        <div className="bg-card border border-border rounded-2xl p-6 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center text-primary font-bold text-xl">
+              {user?.shopName?.[0]}
+            </div>
+            <div>
+              <h2 className="text-xl font-bold">{user?.shopName}</h2>
+              <p className="text-sm text-muted-foreground">{user?.name} · Retailer</p>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2 text-sm">
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <span className="font-bold text-foreground">Mobile:</span> {user?.mobile}
+            </div>
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <span className="font-bold text-foreground">Email:</span> {user?.email}
+            </div>
+            <div className="flex items-center gap-2 text-muted-foreground sm:col-span-2">
+              <span className="font-bold text-foreground">Address:</span> {user?.address}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
+        <Package className="w-6 h-6 text-primary" />
+        Order History
+      </h2>
 
       <div className="space-y-6">
         {orders.map((order) => (

@@ -1,6 +1,13 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --border-color-border: var(--border);
+}
 
 :root {
   --background: #ffffff;
@@ -22,12 +29,13 @@
   --border: #262626;
 }
 
-body {
-  @apply bg-background text-foreground;
-}
-
 @layer base {
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+  }
+  
   * {
-    @apply border-border;
+    border-color: var(--border);
   }
 }

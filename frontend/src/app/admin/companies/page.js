@@ -128,6 +128,15 @@ export default function CompaniesPage() {
                 />
               </div>
               <div>
+                <label className="block text-sm font-medium mb-1">Logo URL</label>
+                <input
+                  className="w-full px-3 py-2 bg-background border border-border rounded-lg"
+                  placeholder="https://example.com/logo.png"
+                  value={formData.logo}
+                  onChange={(e) => setFormData({ ...formData, logo: e.target.value })}
+                />
+              </div>
+              <div>
                 <label className="block text-sm font-medium mb-1">Description</label>
                 <textarea
                   className="w-full px-3 py-2 bg-background border border-border rounded-lg"

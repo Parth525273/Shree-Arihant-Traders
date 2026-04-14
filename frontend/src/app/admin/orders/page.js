@@ -19,6 +19,12 @@ export default function AdminOrdersPage() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  
+  const filteredOrders = orders.filter(o => 
+    o.orderNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    o.retailerId?.shopName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    o.retailerId?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   useEffect(() => {
     fetchOrders();
@@ -44,9 +50,9 @@ export default function AdminOrdersPage() {
     }
   };
 
-  const markPaymentReceived = async (orderId) => {
+  const markPaymentReceived = async (orderId, paymentStatus) => {
     try {
-      await api.put(`/orders/${orderId}/payment`, { paymentStatus: 'received' });
+      await api.put(`/orders/${orderId}/payment`, { paymentStatus });
       fetchOrders();
     } catch (error) {
       alert('Error updating payment');
@@ -143,23 +149,17 @@ export default function AdminOrdersPage() {
                     </select>
                   </td>
                   <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      <span className={cn(
-                        "px-2 py-0.5 rounded text-[10px] font-black uppercase",
-                        order.paymentStatus === 'received' ? "bg-green-100 text-green-700" : "bg-orange-100 text-orange-700"
-                      )}>
-                        {order.paymentStatus === 'received' ? 'Received' : 'Pending'}
-                      </span>
-                      {order.paymentStatus !== 'received' && (
-                        <button 
-                          onClick={() => markPaymentReceived(order._id)}
-                          className="text-primary hover:text-primary/80" 
-                          title="Mark as Received"
-                        >
-                          <CreditCard className="w-4 h-4" />
-                        </button>
+                    <select 
+                      value={order.paymentStatus}
+                      onChange={(e) => markPaymentReceived(order._id, e.target.value)}
+                      className={cn(
+                        "px-2 py-1 rounded text-[10px] font-black uppercase bg-background border border-border outline-none transition-colors",
+                        order.paymentStatus === 'received' ? "text-green-600 border-green-200" : "text-orange-600 border-orange-200"
                       )}
-                    </div>
+                    >
+                      <option value="pending">Pending</option>
+                      <option value="received">Received</option>
+                    </select>
                   </td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex justify-end gap-2">

@@ -50,8 +50,12 @@ export default function Home() {
             className="group relative bg-card border border-border rounded-2xl p-8 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300"
           >
             <div className="flex items-start justify-between">
-              <div className="bg-primary/10 p-4 rounded-xl text-primary group-hover:bg-primary group-hover:text-white transition-colors duration-300">
-                <Building2 className="w-8 h-8" />
+              <div className="bg-primary/10 p-4 rounded-xl text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300 overflow-hidden w-16 h-16 flex items-center justify-center">
+                {company.logo && company.logo !== 'no-photo.jpg' ? (
+                  <img src={company.logo} alt={company.name} className="w-full h-full object-contain" />
+                ) : (
+                  <Building2 className="w-8 h-8" />
+                )}
               </div>
               <ChevronRight className="w-6 h-6 text-muted-foreground group-hover:text-primary transition-colors" />
             </div>

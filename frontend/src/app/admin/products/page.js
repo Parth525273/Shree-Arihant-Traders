@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import api from '@/lib/api';
 import { Plus, Pencil, Trash2, X, Search } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export default function ProductsPage() {
   const [products, setProducts] = useState([]);
@@ -12,6 +13,8 @@ export default function ProductsPage() {
   const [filters, setFilters] = useState({ companyId: '', categoryId: '', search: '' });
   const [showModal, setShowModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
+  const [isAddingQuickCategory, setIsAddingQuickCategory] = useState(false);
+  const [quickCategoryName, setQuickCategoryName] = useState('');
   
   const [formData, setFormData] = useState({
     name: '',
@@ -21,6 +24,7 @@ export default function ProductsPage() {
     basePrice: '',
     unit: 'Box',
     stock: 0,
+    imageUrl: '',
     priceTiers: []
   });
 
@@ -80,6 +84,7 @@ export default function ProductsPage() {
         basePrice: product.basePrice,
         unit: product.unit,
         stock: product.stock,
+        imageUrl: product.images?.[0] || '',
         priceTiers: product.priceTiers || []
       });
     } else {
@@ -92,6 +97,7 @@ export default function ProductsPage() {
         basePrice: '',
         unit: 'Box',
         stock: 0,
+        imageUrl: '',
         priceTiers: []
       });
     }
@@ -102,9 +108,9 @@ export default function ProductsPage() {
     e.preventDefault();
     try {
       if (editingProduct) {
-        await api.put(`/products/${editingProduct._id}`, formData);
+        await api.put(`/products/${editingProduct._id}`, { ...formData, images: [formData.imageUrl] });
       } else {
-        await api.post('/products', formData);
+        await api.post('/products', { ...formData, images: [formData.imageUrl] });
       }
       setShowModal(false);
       fetchProducts();
@@ -129,6 +135,22 @@ export default function ProductsPage() {
     const newTiers = [...formData.priceTiers];
     newTiers[index][field] = value;
     setFormData({ ...formData, priceTiers: newTiers });
+  };
+
+  const handleQuickCategoryAdd = async () => {
+    if (!quickCategoryName.trim() || !formData.companyId) return;
+    try {
+      const { data } = await api.post('/categories', { 
+        name: quickCategoryName, 
+        companyId: formData.companyId 
+      });
+      setCategories([...categories, data]);
+      setFormData({ ...formData, categoryId: data._id });
+      setQuickCategoryName('');
+      setIsAddingQuickCategory(false);
+    } catch (error) {
+      alert('Error adding category');
+    }
   };
 
   return (
@@ -245,11 +267,53 @@ export default function ProductsPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1">Category</label>
-                  <select className="w-full px-3 py-2 bg-background border border-border rounded-lg" value={formData.categoryId} onChange={(e) => setFormData({...formData, categoryId: e.target.value})} required>
-                    <option value="">Select Category</option>
-                    {categories.map(c => <option key={c._id} value={c._id}>{c.name}</option>)}
-                  </select>
+                  <label className="block text-sm font-medium mb-1 flex justify-between">
+                    Category
+                    {!isAddingQuickCategory && (
+                      <button 
+                        type="button" 
+                        onClick={() => setIsAddingQuickCategory(true)}
+                        className="text-xs text-primary font-bold hover:underline"
+                      >
+                        + Quick Add
+                      </button>
+                    )}
+                  </label>
+                  {isAddingQuickCategory ? (
+                    <div className="flex gap-2">
+                      <input 
+                        className="flex-1 px-3 py-1.5 bg-background border border-primary rounded-lg text-sm"
+                        placeholder="New category..."
+                        value={quickCategoryName}
+                        onChange={(e) => setQuickCategoryName(e.target.value)}
+                        autoFocus
+                      />
+                      <button 
+                        type="button" 
+                        onClick={handleQuickCategoryAdd}
+                        className="px-3 bg-primary text-white rounded-lg text-xs font-bold"
+                      >
+                        Save
+                      </button>
+                      <button 
+                        type="button" 
+                        onClick={() => setIsAddingQuickCategory(false)}
+                        className="text-muted-foreground"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ) : (
+                    <select 
+                        className="w-full px-3 py-2 bg-background border border-border rounded-lg" 
+                        value={formData.categoryId} 
+                        onChange={(e) => setFormData({...formData, categoryId: e.target.value})} 
+                        required
+                    >
+                        <option value="">Select Category</option>
+                        {categories.map(c => <option key={c._id} value={c._id}>{c.name}</option>)}
+                    </select>
+                  )}
                 </div>
                 <div>
                     <label className="block text-sm font-medium mb-1">Unit (Box/Kg/etc)</label>
@@ -265,6 +329,13 @@ export default function ProductsPage() {
                 <div>
                   <label className="block text-sm font-medium mb-1">Initial Stock</label>
                   <input type="number" className="w-full px-3 py-2 bg-background border border-border rounded-lg" value={formData.stock} onChange={(e) => setFormData({...formData, stock: e.target.value})} required />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Product Image URL</label>
+                  <input className="w-full px-3 py-2 bg-background border border-border rounded-lg" placeholder="https://example.com/photo.jpg" value={formData.imageUrl} onChange={(e) => setFormData({...formData, imageUrl: e.target.value})} />
                 </div>
               </div>
 
