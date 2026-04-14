@@ -1,5 +1,7 @@
 import { AuthProvider } from "@/context/AuthContext";
+import { CartProvider } from "@/context/CartContext";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import Navbar from "@/components/Navbar";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -31,9 +33,12 @@ export default function RootLayout({ children }) {
           disableTransitionOnChange
         >
           <AuthProvider>
-            <div className="relative flex min-h-screen flex-col">
-              <main className="flex-1">{children}</main>
-            </div>
+            <CartProvider>
+              <div className="relative flex min-h-screen flex-col">
+                <Navbar />
+                <main className="flex-1">{children}</main>
+              </div>
+            </CartProvider>
           </AuthProvider>
         </ThemeProvider>
       </body>
