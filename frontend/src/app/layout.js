@@ -1,3 +1,4 @@
+import { AuthProvider } from "@/context/AuthContext";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -29,9 +30,11 @@ export default function RootLayout({ children }) {
           enableSystem
           disableTransitionOnChange
         >
-          <div className="relative flex min-h-screen flex-col">
-            <main className="flex-1">{children}</main>
-          </div>
+          <AuthProvider>
+            <div className="relative flex min-h-screen flex-col">
+              <main className="flex-1">{children}</main>
+            </div>
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>
