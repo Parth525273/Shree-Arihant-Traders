@@ -18,6 +18,8 @@ app.use('/api/companies', require('./routes/companies.js'));
 app.use('/api/categories', require('./routes/categories.js'));
 app.use('/api/products', require('./routes/products.js'));
 app.use('/api/orders', require('./routes/orders.js'));
+app.use('/api/analytics', require('./routes/analytics.js'));
+app.use('/api/admin', require('./routes/admin.js'));
 
 // Basic Route
 app.get('/', (req, res) => {

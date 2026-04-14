@@ -91,6 +91,14 @@ export default function CheckoutPage() {
         </p>
         
         <div className="flex flex-col gap-4">
+          <div className="bg-card p-6 rounded-2xl border-2 border-dashed border-primary/20 mb-6">
+            <h4 className="text-sm font-bold uppercase tracking-widest text-primary mb-4">Pay via QR (Optional)</h4>
+            <div className="w-48 h-48 bg-muted mx-auto rounded-lg flex items-center justify-center border border-border">
+              <span className="text-xs text-muted-foreground uppercase font-black text-center px-4">Admin QR Code Placeholder</span>
+            </div>
+            <p className="mt-4 text-xs text-muted-foreground">Scan to pay or pay via Cash on Delivery.</p>
+          </div>
+
           <a
             href={generateWhatsAppLink(orderSuccess)}
             target="_blank"

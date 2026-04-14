@@ -53,15 +53,40 @@ export default function AdminOrdersPage() {
     }
   };
 
-  const filteredOrders = orders.filter(o => 
-    o.orderNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    o.retailerId?.shopName?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const exportToCSV = () => {
+    const headers = ["Order Number", "Shop Name", "Customer Name", "Total Amount", "Status", "Payment", "Date"];
+    const rows = filteredOrders.map(o => [
+      o.orderNumber,
+      o.retailerId?.shopName,
+      o.retailerId?.name,
+      o.totalAmount,
+      o.status,
+      o.paymentStatus,
+      new Date(o.createdAt).toLocaleDateString()
+    ]);
+
+    const csvContent = "data:text/csv;charset=utf-8," 
+      + [headers, ...rows].map(e => e.join(",")).join("\n");
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `orders_export_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold text-foreground">Manage Orders</h2>
+        <button 
+          onClick={exportToCSV}
+          className="px-4 py-2 bg-muted text-foreground rounded-lg text-sm font-bold hover:bg-muted/80 transition-colors"
+        >
+          Export CSV
+        </button>
       </div>
 
       <div className="flex flex-wrap gap-4 items-center bg-card p-4 rounded-xl border border-border">
