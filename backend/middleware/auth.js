@@ -4,26 +4,31 @@ const User = require('../models/User');
 const protect = async (req, res, next) => {
   let token;
 
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith('Bearer')
-  ) {
+  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     try {
       token = req.headers.authorization.split(' ')[1];
+      console.log('📡 Auth Check: Received Token');
 
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const user = await User.findById(decoded.id).select('-password');
+      
+      if (!user) {
+        console.log('❌ Auth Check: User associated with token no longer exists');
+        return res.status(401).json({ message: 'Not authorized, user not found' });
+      }
 
-      req.user = await User.findById(decoded.id).select('-password');
-
-      next();
+      req.user = user;
+      console.log('✅ Auth Check: Success for user:', user.email);
+      return next();
     } catch (error) {
-      console.error(error);
-      res.status(401).json({ message: 'Not authorized, token failed' });
+      console.error('❌ Auth Check Error:', error.message);
+      return res.status(401).json({ message: 'Not authorized, token failed' });
     }
   }
 
   if (!token) {
-    res.status(401).json({ message: 'Not authorized, no token' });
+    console.log('❌ Auth Check: No token provided');
+    return res.status(401).json({ message: 'Not authorized, no token' });
   }
 };
 

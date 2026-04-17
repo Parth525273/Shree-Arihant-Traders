@@ -12,11 +12,46 @@ export const AuthProvider = ({ children }) => {
   const router = useRouter();
 
   useEffect(() => {
-    const savedUser = localStorage.getItem('user');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
-    setLoading(false);
+    const loadUser = async () => {
+      const token = localStorage.getItem('token');
+      const savedUserString = localStorage.getItem('user');
+      let savedUser = null;
+      
+      if (savedUserString) {
+        try {
+          savedUser = JSON.parse(savedUserString);
+          setUser(savedUser);
+        } catch (e) {
+          localStorage.removeItem('user');
+        }
+      }
+
+      if (token) {
+        try {
+          const { data } = await api.get('/auth/me');
+          setUser(data);
+          localStorage.setItem('user', JSON.stringify(data));
+        } catch (error) {
+          // Only clear session if explicitly unauthorized (401)
+          if (error.response?.status === 401) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            setUser(null);
+          }
+          // Otherwise, we keep the savedUser as a fallback
+        }
+      } else {
+        setUser(null);
+      }
+      setLoading(false);
+    };
+
+    loadUser();
+
+    // Listen for storage changes (updates from other pages/tabs)
+    const handleStorageChange = () => loadUser();
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
   const login = async (email, password) => {
@@ -59,7 +94,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, signup, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, signup, logout, setUser }}>
       {children}
     </AuthContext.Provider>
   );
