@@ -197,4 +197,47 @@ router.post('/reset-password/:token', async (req, res) => {
   }
 });
 
+// ─── PUT /api/auth/profile ────────────────────────────────
+// Update logged-in user's profile info
+router.put('/profile', protect, async (req, res) => {
+  try {
+    const { name, mobile, shopName, address } = req.body;
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      { name, mobile, shopName, address },
+      { new: true, runValidators: true }
+    );
+    res.json({ message: 'Profile updated successfully!', user });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// ─── PUT /api/auth/change-password ────────────────────────
+// Change password (requires current password)
+router.put('/change-password', protect, async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ message: 'Both current and new passwords are required.' });
+    }
+    if (newPassword.length < 6) {
+      return res.status(400).json({ message: 'New password must be at least 6 characters.' });
+    }
+
+    // Get user with password field
+    const user = await User.findById(req.user._id).select('+password');
+    const isMatch = await user.comparePassword(currentPassword);
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Current password is incorrect.' });
+    }
+
+    user.password = newPassword;
+    await user.save();
+    res.json({ message: 'Password changed successfully!' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 module.exports = router;
